@@ -86,6 +86,34 @@ def is_description_heading_about_(description, heading):
         print(f"ChatGPT answer: {answer}")
     return answer
 
+def check_dimensions(returned_string, desired_width=2.8, desired_height=2.3, tolerance=0.2):
+    # Split the returned string
+    parts = returned_string.split('|')
+    
+    # Ensure there are three parts and neither d1 nor d2 is 'na'
+    if len(parts) == 3 and parts[1] != 'na' and parts[2] != 'na':
+        try:
+            # Convert d1 and d2 to float
+            d1 = float(parts[1])
+            d2 = float(parts[2])
+
+            # Calculate the minimum and maximum dimensions with tolerance
+            min_width = desired_width * (1 - tolerance)
+            max_width = desired_width * (1 + tolerance)
+            min_height = desired_height * (1 - tolerance)
+            max_height = desired_height * (1 + tolerance)
+
+            # Check if dimensions are within the desired range
+            if min_width <= d1 <= max_width and min_height <= d2 <= max_height:
+                return True
+            else:
+                return False
+        except ValueError:
+            # Handle the case where d1 or d2 cannot be converted to float
+            return False
+    else:
+        return False
+
 
 def visit_ids_with_playwright(item_ids):
     with sync_playwright() as p:
@@ -209,8 +237,9 @@ def visit_ids_with_playwright(item_ids):
                 if details_are_exclude(details_collected_text) == False and heading_details_keyword(details_collected_text, heading_collected_text) == True:
                     chat_gpt_response = is_description_heading_about_(details_collected_text, heading_collected_text)
                     if 'yes' in chat_gpt_response:
-                        send_alert_email(item_id)
-                        matched_ids.add(item_id + '|' + chat_gpt_response)
+                        if check_dimensions(chat_gpt_response):
+                            send_alert_email(item_id)
+                            matched_ids.add(item_id + '|' + chat_gpt_response)
                         
             # add the visited id to the set
             visited_ids.add(item_id)
