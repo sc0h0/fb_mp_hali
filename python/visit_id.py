@@ -207,7 +207,9 @@ def visit_ids_with_playwright(item_ids):
                     if 'yes' in is_description_heading_about_(details_collected_text, heading_collected_text):
                         print("Description matches")
                         send_alert_email(item_id)
-                        matched_ids.add(is_description_heading_about_(details_collected_text, heading_collected_text))
+                        print('This is the returned string from is_description_heading_about_')
+                        print(is_description_heading_about_(details_collected_text, heading_collected_text))
+                        matched_ids.add(item_id)
                         
             # add the visited id to the set
             visited_ids.add(item_id)
