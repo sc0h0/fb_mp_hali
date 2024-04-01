@@ -24,7 +24,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=True, slow_mo=1000)
     page = browser.new_page()
     
-    page.goto('https://www.facebook.com/marketplace/melbourne/search?daysSinceListed=1&query=grange')
+    page.goto('https://www.facebook.com/marketplace/melbourne/search?daysSinceListed=1&query=hali')
     # wait some time for page to load
     page.wait_for_timeout(3000)
     login_prompt = page.query_selector("text=/log in to continue/i")
@@ -33,7 +33,7 @@ with sync_playwright() as p:
     login_button = page.query_selector('button[name="login"]')
     login_button.click()
     page.wait_for_timeout(3000)
-    page.goto('https://www.facebook.com/marketplace/melbourne/search?daysSinceListed=1&query=grange')
+    page.goto('https://www.facebook.com/marketplace/melbourne/search?daysSinceListed=1&query=hali')
     
     # Regular expression to match the desired URL pattern
     url_pattern = re.compile(r'/marketplace/item/(\d+)')
