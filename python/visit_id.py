@@ -55,22 +55,25 @@ client = OpenAI(api_key=os.environ['CHATGPT_API'])
 
 def is_description_heading_about_(description, heading):
     # Use the client to create a chat completion
+    prompt = f"""
+    Based on the following description and title for an item listed on Facebook Marketplace, determine if the item is a rug or floor runner. Respond strictly in the format 'yes|d1|d2' if it is a rug or floor runner, with 'd1' and 'd2' as the dimensions in meters. If the item is not a rug or floor runner, respond with 'no'. If dimensions cannot be determined, use 'na' for 'd1' and 'd2'.
+
+    Description: {description}
+    |||
+    Title: {heading}
+
+    Note: Your response should strictly follow the 'yes|d1|d2' or 'no' format without additional explanations.
+    """
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",  # Ensure you're using the latest suitable model
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"""
-            Determine if the following Facebook Marketplace item, based on its description and title, is a rug or floor runner. Provide a 'yes|d1|d2' response if true, with dimensions in meters, or 'no' otherwise. Use 'na' for unknown dimensions.
-            Description: {description}
-            |||
-            Title: {heading}
-            """}
+            {"role": "user", "content": prompt}
         ]
     )
 
     if print_mode:
-        print(f"Description: {description}")
-        print(f"Heading: {heading}")
+        print(f"Prompt: prompt")
 
     # Extract and process the answer
     answer = completion.choices[0].message.content.strip().lower()
