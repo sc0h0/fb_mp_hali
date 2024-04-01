@@ -33,7 +33,8 @@ mid_csv_files = glob.glob(os.path.join(matched_folder_path, '*.csv'))
 def details_are_exclude(details_collected_text):
     # Convert the collected text to lowercase for case-insensitive comparison
     text_lower = details_collected_text.lower()
-    keywords = ['grange rd', 'grange road', 'near grange', 'grange style', 'grange-style', 'grange view']
+    # enter any keywords with 'abc', 'xyz' that you want excluded
+    keywords = ['abc', 'xyz']
     # Check if the lowercase text contains
     return any(keyword in text_lower for keyword in keywords)
     
@@ -41,8 +42,9 @@ def heading_details_keyword(details_collected_text, title_collected_text):
     text_lower = details_collected_text.lower()
     title_lower = title_collected_text.lower()
 
-    # Check if the lowercase text contains 'grange'
-    if 'grange' in text_lower or 'grange' in title_lower:
+    # Check if the lowercase text contains 'hali'
+    essential_word = 'hali'
+    if essential_word in text_lower or essential_word in title_lower:
         return True   
     else:
         return False   
@@ -51,7 +53,7 @@ def heading_details_keyword(details_collected_text, title_collected_text):
 client = OpenAI(api_key=os.environ['CHATGPT_API'])
 
 
-def is_description_heading_about_furniture(description, heading):
+def is_description_heading_about_(description, heading):
     # Use the client to create a chat completion
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",  # Ensure you're using the latest suitable model
@@ -59,12 +61,16 @@ def is_description_heading_about_furniture(description, heading):
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": f"""
             Consider the following description and title for an item listed on Facebook Marketplace. 
-            Your task is to determine if the content suggests that the item is NOT a piece of furniture. 
+            Your task is to determine if the content suggests that the item is a rug or floor runner?
             The item description is provided first, followed by the title, separated by '|||' for clarity.
             Description: {description}
             |||
             Title: {heading}
-            Based on the description and title, is the item a piece of furniture? Please respond with 'yes' if it is a piece of furniture, and 'no' otherwise.
+            Based on the description and title, is the item a rug or floor runner? Please respond with 'yes|d1|d2' if it is a rug or floor runner, and 'no' otherwise.
+            The d1 and d2 are the dimensions of the rug or floor runner that you were able to extract from the item description or title. They must be supplied in meters.
+            If you are unsure of the dimensions, then return d1 as 'na' and d2 as 'na'.
+            For example: 'yes|1.4|2'
+            Or when you are unsure of dimensions: 'yes|na|na'
             """}
         ]
     )
@@ -77,7 +83,7 @@ def is_description_heading_about_furniture(description, heading):
     answer = completion.choices[0].message.content.strip().lower()
     if print_mode:
         print(f"ChatGPT answer: {answer}")
-    return "yes" in answer
+    return answer
 
 
 def visit_ids_with_playwright(item_ids):
@@ -198,10 +204,10 @@ def visit_ids_with_playwright(item_ids):
                 
                 # if exclude comes back false then it makes sense to use api credits to check if furniture
                 if details_are_exclude(details_collected_text) == False and heading_details_keyword(details_collected_text, heading_collected_text) == True:
-                    if is_description_heading_about_furniture(details_collected_text, heading_collected_text) == True:
-                        print("This is grange furniture")
+                    if 'yes' in is_description_heading_about_(details_collected_text, heading_collected_text):
+                        print("Description matches")
                         send_alert_email(item_id)
-                        matched_ids.add(item_id)
+                        matched_ids.add(is_description_heading_about_(details_collected_text, heading_collected_text))
                         
             # add the visited id to the set
             visited_ids.add(item_id)
