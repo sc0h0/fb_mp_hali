@@ -60,18 +60,10 @@ def is_description_heading_about_(description, heading):
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": f"""
-            Consider the following description and title for an item listed on Facebook Marketplace. 
-            Your task is to determine if the content suggests that the item is a rug or floor runner?
-            The item description is provided first, followed by the title, separated by '|||' for clarity.
+            Determine if the following Facebook Marketplace item, based on its description and title, is a rug or floor runner. Provide a 'yes|d1|d2' response if true, with dimensions in meters, or 'no' otherwise. Use 'na' for unknown dimensions.
             Description: {description}
             |||
             Title: {heading}
-            Based on the description and title, is the item a rug or floor runner? Please respond with 'yes|d1|d2' if it is a rug or floor runner, and 'no' otherwise.
-            The d1 and d2 are the dimensions of the rug or floor runner that you were able to extract from the item description or title. They must be supplied in meters.
-            If you are unsure of the dimensions, then return d1 as 'na' and d2 as 'na'.
-            
-            For example: 'yes|1.4|2'
-            Or, an example when you are unsure of dimensions: 'yes|na|na'
             """}
         ]
     )
