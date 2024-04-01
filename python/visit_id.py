@@ -210,7 +210,7 @@ def visit_ids_with_playwright(item_ids):
                     chat_gpt_response = is_description_heading_about_(details_collected_text, heading_collected_text)
                     if 'yes' in chat_gpt_response:
                         send_alert_email(item_id)
-                        matched_ids.add(chat_gpt_response)
+                        matched_ids.add(item_id + '|' + chat_gpt_response)
                         
             # add the visited id to the set
             visited_ids.add(item_id)
