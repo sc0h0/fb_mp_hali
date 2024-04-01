@@ -69,8 +69,9 @@ def is_description_heading_about_(description, heading):
             Based on the description and title, is the item a rug or floor runner? Please respond with 'yes|d1|d2' if it is a rug or floor runner, and 'no' otherwise.
             The d1 and d2 are the dimensions of the rug or floor runner that you were able to extract from the item description or title. They must be supplied in meters.
             If you are unsure of the dimensions, then return d1 as 'na' and d2 as 'na'.
+            
             For example: 'yes|1.4|2'
-            Or when you are unsure of dimensions: 'yes|na|na'
+            Or, an example when you are unsure of dimensions: 'yes|na|na'
             """}
         ]
     )
@@ -201,15 +202,15 @@ def visit_ids_with_playwright(item_ids):
                 heading_collected_text = ' '.join(collected_text_between)
                 if print_mode:
                     print(f"This is the heading_collected_text: {heading_collected_text}")
+
+                chat_gpt_response = ''
                 
                 # if exclude comes back false then it makes sense to use api credits to check if furniture
                 if details_are_exclude(details_collected_text) == False and heading_details_keyword(details_collected_text, heading_collected_text) == True:
-                    if 'yes' in is_description_heading_about_(details_collected_text, heading_collected_text):
-                        print("Description matches")
+                    chat_gpt_response = is_description_heading_about_(details_collected_text, heading_collected_text)
+                    if 'yes' in chat_gpt_response:
                         send_alert_email(item_id)
-                        print('This is the returned string from is_description_heading_about_')
-                        print(is_description_heading_about_(details_collected_text, heading_collected_text))
-                        matched_ids.add(item_id)
+                        matched_ids.add(chat_gpt_response)
                         
             # add the visited id to the set
             visited_ids.add(item_id)
