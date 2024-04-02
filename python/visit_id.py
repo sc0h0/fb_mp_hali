@@ -236,8 +236,8 @@ def visit_ids_with_playwright(item_ids):
                             send_alert_email(item_id)
                             matched_ids.add(item_id + '|' + chat_gpt_response)
                         
-            # add the visited id to the set
-            visited_ids.add(item_id)
+                # add the visited id to the set, only if "Seller information" was found, meaning that the page successfully loaded
+                visited_ids.add(item_id)
 
                 
 
