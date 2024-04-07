@@ -81,25 +81,26 @@ def is_description_heading_about_(description, heading):
         print(f"ChatGPT answer: {answer}")
     return answer
 
-def check_dimensions(returned_string, desired_width=2.8, desired_height=2.3, tolerance=0.2):
+def check_dimensions(returned_string, desired_width=2.8, desired_length=2.3, tolerance=0.2):
     # Split the returned string
     parts = returned_string.split('|')
     
-    # Ensure there are three parts and neither d1 nor d2 is 'na'
-    if len(parts) == 3 and parts[1] != 'na' and parts[2] != 'na':
+    # Ensure there are three parts
+    if len(parts) == 3 and parts[1].lower() != 'na' and parts[2].lower() != 'na':
         try:
             # Convert d1 and d2 to float
-            d1 = float(parts[1])
-            d2 = float(parts[2])
+            dimension1 = float(parts[1])
+            dimension2 = float(parts[2])
 
-            # Calculate the minimum and maximum dimensions with tolerance
+            # Calculate the minimum and maximum dimensions with tolerance for both width and length
             min_width = desired_width * (1 - tolerance)
             max_width = desired_width * (1 + tolerance)
-            min_height = desired_height * (1 - tolerance)
-            max_height = desired_height * (1 + tolerance)
+            min_length = desired_length * (1 - tolerance)
+            max_length = desired_length * (1 + tolerance)
 
-            # Check if dimensions are within the desired range
-            if min_width <= d1 <= max_width and min_height <= d2 <= max_height:
+            # Check if either combination of dimensions are within the desired range
+            if ((min_width <= dimension1 <= max_width and min_length <= dimension2 <= max_length) or
+               (min_width <= dimension2 <= max_width and min_length <= dimension1 <= max_length)):
                 return True
             else:
                 return False
@@ -108,6 +109,7 @@ def check_dimensions(returned_string, desired_width=2.8, desired_height=2.3, tol
             return False
     else:
         return False
+
 
 
 def visit_ids_with_playwright(item_ids):
